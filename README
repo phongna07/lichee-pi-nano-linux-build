@@ -1,26 +1,64 @@
-Buildroot is a simple, efficient and easy-to-use tool to generate embedded
-Linux systems through cross-compilation.
+# Buildroot cho Lichee Pi Nano
 
-The documentation can be found in docs/manual. You can generate a text
-document with 'make manual-text' and read output/docs/manual/manual.text.
-Online documentation can be found at https://buildroot.org/docs.html
+## Giới thiệu
 
-To build and use the buildroot stuff, do the following:
+Repo sử dụng **Buildroot** để build image cho vi điều khiển **Lichee Pi Nano**. Bài tập cho FPT Telecom Embedded Bootcamp 2026.
 
-1) run 'make menuconfig'
-2) select the target architecture and the packages you wish to compile
-3) run 'make'
-4) wait while it compiles
-5) find the kernel, bootloader, root filesystem, etc. in output/images
+## Cấu trúc Build Image
 
-You do not need to be root to build or run buildroot.  Have fun!
+### 1. Cấu hình chung (file genimage.cfg)
 
-Buildroot comes with a basic configuration for a number of boards. Run
-'make list-defconfigs' to view the list of provided configurations.
+Tệp cấu hình chính nằm tại: `board/sipeed/licheepi_nano/genimage.cfg`
 
-Please feed suggestions, bug reports, insults, and bribes back to the
-buildroot mailing list: buildroot@buildroot.org
-You can also find us on #buildroot on OFTC IRC.
+```ini
+image sdcard.img {
+	hdimage {
+	}
 
-If you would like to contribute patches, please read
-https://buildroot.org/manual.html#submitting-patches
+	partition u-boot {
+		in-partition-table = "no"
+		image = "u-boot-sunxi-with-spl.bin"
+		offset = 8k
+		size = 512k
+	}
+
+	partition boot {
+		partition-type = 0xC
+		bootable = "true"
+		image = "boot.vfat"
+	}
+
+	partition rootfs {
+		partition-type = 0x83
+		image = "rootfs.ext4"
+	}
+}
+
+image boot.vfat {
+	vfat {
+		files = {
+			"zImage",
+			"suniv-f1c100s-licheepi-nano.dtb"
+		}
+	}
+	size = 32M
+}
+```
+
+### 2. Yêu cầu Build U-Boot
+
+`u-boot-sunxi-with-spl.bin` → được ghi vào phân vùng u-boot tại offset 8k với kích thước 512k
+
+### 3. Build Linux Kernel (zImage)
+
+`zImage` (kernel image) → được đặt trong phân vùng boot
+
+### 4. Tạo Root Filesystem (RootFS)
+
+`rootfs.ext4` → được ghi vào phân vùng rootfs
+
+### 5. Generate Image (sdcard.img)
+
+Công cụ **genimage** sử dụng file cấu hình `genimage.cfg` để tạo image cuối cùng.
+
+**Kết quả build**: [sdcard.img](./output/images/sdcard.img) file image hoàn chỉnh nằm trong [output/images/](./output/images/)
