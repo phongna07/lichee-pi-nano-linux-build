@@ -4,6 +4,9 @@
 
 Repo sử dụng **Buildroot** để build image cho vi điều khiển **Lichee Pi Nano**. Bài tập cho FPT Telecom Embedded Bootcamp 2026.
 
+## Output image
+Kết quả cuối cùng sau quá trình build nằm ở file **sdcard.img** trong folder [output/images/](./output/images/)
+
 ## Cấu trúc Build Image
 
 ### 1. Cấu hình chung (file genimage.cfg)
@@ -47,15 +50,15 @@ image boot.vfat {
 
 ### 2. Yêu cầu Build U-Boot
 
-`u-boot-sunxi-with-spl.bin` → được ghi vào phân vùng u-boot tại offset 8k với kích thước 512k
+`u-boot-sunxi-with-spl.bin` được ghi vào phân vùng u-boot tại offset 8k với kích thước 512k
 
 ### 3. Build Linux Kernel (zImage)
 
-`zImage` (kernel image) → được đặt trong phân vùng boot
+`zImage` (kernel image) được đặt trong phân vùng boot
 
 ### 4. Tạo Root Filesystem (RootFS)
 
-`rootfs.ext4` → được ghi vào phân vùng rootfs
+`rootfs.ext4` được ghi vào phân vùng rootfs
 
 ### 5. Generate Image (sdcard.img)
 
